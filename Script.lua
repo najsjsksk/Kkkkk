@@ -1,11 +1,21 @@
-if not getgenv().Key or not getgenv().id then
-    error("Chưa có KEY hoặc ID.")
-end
+local HttpService = game:GetService("HttpService")
+local hwid = game:GetService("RbxAnalyticsService"):GetClientId()
+local key = getgenv().Key or "ABCDEF-123456"
 
-local http = game:HttpGet("https://your-api-site.com/validate?key=" .. getgenv().Key .. "&id=" .. getgenv().id .. "&hwid=" .. game:GetService('RbxAnalyticsService'):GetClientId())
-local response = game:GetService("HttpService"):JSONDecode(http)
+local response = request({
+    Url = "https://workspace.bqjajkakiqwi.repl.co/api/verify",
+    Method = "POST",
+    Headers = {["Content-Type"] = "application/json"},
+    Body = HttpService:JSONEncode({
+        key = key,
+        hwid = hwid
+    })
+})
 
-if not response.success then
-    error(response.message or "Không xác thực được.")
+local result = HttpService:JSONDecode(response.Body)
+
+if result.status == "success" then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+else
+    warn("Lỗi xác thực: " .. result.status)
 end
-loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
